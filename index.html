@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#1a120b">
+  <title>Thợ Săn Cổ Vật</title>
+  <meta name="description" content="Game AR: nhập vai nhà khảo cổ, dùng camera và AI để tìm, khai quật và sưu tầm cổ vật khắp thế giới.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- MENU -->
+    <section id="screen-menu" class="screen active">
+      <div class="menu-bg" aria-hidden="true">
+        <svg viewBox="0 0 200 200" class="compass">
+          <circle cx="100" cy="100" r="92"/><circle cx="100" cy="100" r="70"/>
+          <path d="M100 8 L110 100 L100 192 L90 100Z"/><path d="M8 100 L100 90 L192 100 L100 110Z"/>
+          <path d="M35 35 L104 96 L165 165 L96 104Z" class="thin"/><path d="M165 35 L104 104 L35 165 L96 96Z" class="thin"/>
+        </svg>
+      </div>
+      <div class="menu-inner">
+        <div class="eyebrow">Game khảo cổ thực tế tăng cường</div>
+        <h1 class="logo">Thợ Săn<br><span>Cổ Vật</span></h1>
+        <p class="tagline">Nhập vai nhà khảo cổ. Dùng camera AR và trí tuệ nhân tạo để lần theo dấu vết, khai quật và sưu tầm những bảo vật của nhân loại.</p>
+        <div id="menu-rank" class="menu-rank"></div>
+        <div class="menu-buttons">
+          <button class="btn primary big" data-go="play">🧭 Bắt đầu thám hiểm</button>
+          <button class="btn" data-go="museum">🏛️ Bảo tàng của tôi</button>
+          <button class="btn" data-go="appraisals">📸 Sổ giám định AI</button>
+          <div class="row">
+            <button class="btn ghost" data-go="guide">📜 Hướng dẫn</button>
+            <button class="btn ghost" data-go="settings">⚙️ Cài đặt AI</button>
+          </div>
+        </div>
+        <small id="menu-ai" class="menu-ai"></small>
+      </div>
+    </section>
+
+    <!-- BẢN ĐỒ -->
+    <section id="screen-map" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-go="menu" aria-label="Về menu">←</button>
+        <h2>Bản đồ thám hiểm</h2>
+        <button class="icon-btn" data-go="museum" aria-label="Bảo tàng">🏛️</button>
+      </header>
+      <div class="map-wrap">
+        <svg id="map-svg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <p id="map-progress" class="map-progress"></p>
+      <p class="map-tip">Chọn một vùng đã mở để bắt đầu. Tìm thêm cổ vật để mở khóa các nền văn minh mới.</p>
+    </section>
+
+    <!-- VÙNG -->
+    <section id="screen-region" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-go="map" aria-label="Về bản đồ">←</button>
+        <h2>Khu khảo cổ</h2>
+        <button class="icon-btn" data-go="museum" aria-label="Bảo tàng">🏛️</button>
+      </header>
+      <div class="page">
+        <div id="region-head" class="region-head"></div>
+        <div id="region-list" class="art-grid"></div>
+      </div>
+    </section>
+
+    <!-- THÁM HIỂM AR -->
+    <section id="screen-expedition" class="screen ar">
+      <video id="exp-video" playsinline muted autoplay></video>
+      <img id="exp-photo" alt="Ảnh bạn vừa chụp" hidden>
+      <canvas id="exp-sim" hidden></canvas>
+      <input id="exp-file" type="file" accept="image/*" capture="environment" hidden>
+      <canvas id="exp-hud"></canvas>
+      <div class="ar-top">
+        <button id="exp-back" class="icon-btn dark" aria-label="Thoát">✕</button>
+        <div class="ar-title"><small id="exp-region"></small><b id="exp-title"></b></div>
+        <button id="exp-flip" class="icon-btn dark" aria-label="Đổi camera">🔄</button>
+      </div>
+      <div class="ar-clue no-drag"><span class="clue-icon">📜</span><p id="exp-clue"></p></div>
+      <div id="exp-target" class="ar-target" hidden></div>
+      <div class="ar-bottom">
+        <div id="exp-status" class="ar-status"></div>
+        <div class="ar-actions">
+          <button id="exp-hint" class="ar-btn">💡<span>Gợi ý</span><small>3</small></button>
+          <button id="exp-appraise" class="ar-btn main">📸<span>Giám định AI</span></button>
+          <button id="exp-mode" class="ar-btn">📡<span>Máy dò</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- BẢO TÀNG -->
+    <section id="screen-museum" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-go="menu" aria-label="Về menu">←</button>
+        <h2>Bảo tàng của tôi</h2>
+        <button class="icon-btn" data-go="map" aria-label="Bản đồ">🗺️</button>
+      </header>
+      <div class="page">
+        <div id="museum-head" class="museum-head"></div>
+        <div id="museum-list"></div>
+      </div>
+    </section>
+
+    <!-- HỒ SƠ CỔ VẬT -->
+    <section id="screen-detail" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-go="back" aria-label="Quay lại">←</button>
+        <h2>Hồ sơ cổ vật</h2>
+        <button class="icon-btn" data-go="museum" aria-label="Bảo tàng">🏛️</button>
+      </header>
+      <div id="detail-body" class="page detail"></div>
+    </section>
+
+    <!-- SỔ GIÁM ĐỊNH -->
+    <section id="screen-appraisals" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-go="menu" aria-label="Về menu">←</button>
+        <h2>Sổ giám định AI</h2>
+        <span></span>
+      </header>
+      <div class="page"><div id="appraisal-list" class="appraisal-list"></div></div>
+    </section>
+
+    <!-- CÀI ĐẶT -->
+    <section id="screen-settings" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-go="menu" aria-label="Về menu">←</button>
+        <h2>Cài đặt</h2>
+        <span></span>
+      </header>
+      <div class="page narrow">
+        <div class="card">
+          <h3>🧠 AI Giáo sư (Claude)</h3>
+          <p id="set-claude-note" class="muted" hidden></p>
+          <div id="set-key-block">
+          <p class="muted">Không bắt buộc. Game có sẵn AI nhận diện vật thể chạy ngay trên máy. Thêm khóa API Claude để trò chuyện tự do với Giáo sư giám tuyển và giám định ảnh đồ vật thật.</p>
+          <label class="field">Khóa API Anthropic
+            <input id="set-key" type="password" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+          </label>
+          <label class="field">Model
+            <select id="set-model">
+              <option value="claude-opus-5-5">Claude Opus 5.5 (thông minh nhất)</option>
+              <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (cân bằng)</option>
+              <option value="claude-haiku-5-5">Claude Haiku 5.5 (nhanh, rẻ)</option>
+            </select>
+          </label>
+          <p class="note">🔒 Khóa chỉ được lưu trong trình duyệt của bạn và gửi thẳng tới api.anthropic.com. Chỉ nên dùng trên thiết bị cá nhân.</p>
+          </div>
+          <div class="row"><button id="set-test" class="btn">Kiểm tra kết nối</button></div>
+          <p id="set-result" class="muted"></p>
+        </div>
+        <div class="card">
+          <h3>🔊 Âm thanh</h3>
+          <label class="switch"><input id="set-sound" type="checkbox"> Bật hiệu ứng âm thanh</label>
+        </div>
+        <div class="card">
+          <h3>🗑️ Dữ liệu</h3>
+          <p id="set-sync" class="muted"></p>
+          <div class="row"><button id="set-reset" class="btn danger">Xóa tiến trình chơi</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HƯỚNG DẪN -->
+    <section id="screen-guide" class="screen">
+      <header class="bar">
+        <button class="icon-btn" data-go="menu" aria-label="Về menu">←</button>
+        <h2>Cẩm nang nhà khảo cổ</h2>
+        <span></span>
+      </header>
+      <div class="page narrow guide">
+        <div class="step"><span>1</span><div><b>Chọn điểm khảo cổ</b><p>Trên bản đồ thế giới, chọn một nền văn minh rồi chọn cổ vật muốn săn. Mỗi cổ vật có một câu đố trong nhật ký thám hiểm.</p></div></div>
+        <div class="step"><span>2</span><div><b>AI quét bằng camera</b><p>Câu đố ám chỉ một đồ vật đời thường (cái cốc, cuốn sách, bàn phím…). Lia camera quanh bạn – AI nhận diện vật thể sẽ đóng khung mọi thứ nó thấy. Tìm đúng đồ vật và giữ yên để "đánh thức" cổ vật. Nếu trang không mở được camera trực tiếp (ví dụ trên claude.ai), bấm 📷 Chụp & quét để chụp một tấm – AI sẽ tìm đồ vật trong ảnh. Tìm bằng AI được thưởng ×1.2 điểm!</p></div></div>
+        <div class="step"><span>3</span><div><b>Hoặc dùng máy dò</b><p>Không có đồ vật đó? Bật 📡 Máy dò: cổ vật ẩn ở một hướng quanh bạn. Xoay người theo tiếng bíp và radar, khi vầng sáng vàng xuất hiện hãy đưa nó vào giữa màn hình. Trên máy tính: kéo chuột hoặc dùng phím mũi tên.</p></div></div>
+        <div class="step"><span>4</span><div><b>Khai quật cẩn thận</b><p>⛏️ Xẻng đào nhanh lớp đất dày, nhưng chạm vào cổ vật sẽ làm nứt vỡ. 🖌️ Cọ chậm mà an toàn. Cổ vật càng nguyên vẹn, điểm uy tín càng cao.</p></div></div>
+        <div class="step"><span>5</span><div><b>Học hỏi & sưu tầm</b><p>Mở hồ sơ cổ vật để xoay mô hình 3D và hỏi Giáo sư AI bất cứ điều gì. Bấm 📸 trong lúc thám hiểm để AI "giám định" một đồ vật bất kỳ quanh bạn như một cổ vật tương lai!</p></div></div>
+        <p class="note">📱 Chơi tốt nhất trên điện thoại. Lần đầu dùng AI, trang sẽ xin phép dùng Claude hoặc camera.</p>
+        <button class="btn primary big" data-go="map">Lên đường! 🧭</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/platform.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/models.js"></script>
+  <script src="js/viewer.js"></script>
+  <script src="js/ar.js"></script>
+  <script src="js/excavate.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/expedition.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

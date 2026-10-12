@@ -2,7 +2,11 @@
 
 Người chơi nhập vai nhà khảo cổ, dùng **camera AR** và **trí tuệ nhân tạo** để lần theo dấu vết, khai quật và sưu tầm 12 cổ vật nổi tiếng từ 6 nền văn minh: Việt Nam, Ai Cập, Hy Lạp, Trung Hoa, Lưỡng Hà, Trung Mỹ.
 
-## Chạy game
+## Chơi ngay
+
+**https://phamson295.github.io/tho-san-co-vat/** – mở trên điện thoại (Chrome trên Android, Safari trên iPhone), cho phép camera và cảm biến chuyển động khi được hỏi.
+
+## Chạy trên máy
 
 Cần [Node.js](https://nodejs.org) (chỉ để chạy máy chủ tĩnh, không cần cài thư viện):
 
@@ -12,9 +16,15 @@ node server.js
 
 Mở `http://localhost:8080` trên máy tính. Webcam sẽ được dùng cho AI quét; nếu không có camera, game chuyển sang khu khai quật mô phỏng (kéo chuột/phím mũi tên để nhìn quanh).
 
-### Chơi trên điện thoại (khuyến nghị)
+### Chơi trên điện thoại
 
-Trình duyệt chỉ cho dùng camera và cảm biến trên **HTTPS**. Cách đơn giản nhất: đưa cả thư mục lên một dịch vụ web tĩnh (GitHub Pages, Netlify Drop, Cloudflare Pages…) rồi mở link trên điện thoại bằng Chrome (Android) hoặc Safari (iOS). Game không có bước build: chỉ là HTML/CSS/JS.
+Trình duyệt chỉ cho dùng camera và cảm biến trên **HTTPS**, nên trên điện thoại hãy dùng link GitHub Pages ở trên. Mỗi lần đẩy code lên nhánh `main`, GitHub Pages tự cập nhật trang. Game không có bước build: chỉ là HTML/CSS/JS.
+
+Nếu trang không mở được camera trực tiếp (ví dụ khi chạy qua `http://` trên mạng LAN), game tự chuyển sang chế độ **📷 Chụp & quét**: chụp một tấm ảnh và AI tìm đồ vật trong ảnh.
+
+### Bản đăng trên claude.ai
+
+`node build-artifact.js` tạo `dist/tho-san-co-vat.html` để đăng thành Artifact trên claude.ai. Ở đó trang không được dùng camera trực tiếp nên luôn ở chế độ chụp ảnh; AI dùng Claude qua tài khoản claude.ai của người chơi và tiến trình được đồng bộ vào kho riêng của họ.
 
 ## Cách chơi
 
